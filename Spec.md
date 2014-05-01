@@ -1,19 +1,21 @@
 ##Update API Specification
 
-### API Sepcification
+### API Specification
 
-#### POST /v1/update
+#### Update API Specification
+
+##### POST /v1/updates
 
 创建一个 Application 的版本信息。由 [Board](https://github.com/arkors/board) 模块通过 UI 界面进行调用。
 
-##### Example Request:
+###### Example Request:
 
 ```
-POST /v1/update HTTP/1.1
+POST /v1/updates HTTP/1.1
 Host: update.arkors.com
 X-Arkors-Application-Id: demo
 X-Arkors-Application-Log: 5024442115e7bd738354c1fac662aed5
-X-Arkors-Application-Client: Board,xxx.xx.xx.xxx
+X-Arkors-Application-Client: xxx.xx.xx.xxx,BOARD
 Accept: application/json
 {
   "id": "3",
@@ -26,7 +28,7 @@ Accept: application/json
 }
 ```
 
-##### Example Response
+###### Example Response
 
 ```
 HTTP/1.1 201 OK
@@ -37,14 +39,14 @@ Content-Type: application/json
 }
 ```
 
-##### Status Codes:
+###### Status Codes:
 
 * 201 – 创建 Update 记录成功
 * 400 – Errors (invalid json, missing or invalid fields, etc)
 
-#### GET /v1/update
+##### GET /v1/updates
 
-客户端访问 /v1/update ，发送当前运行的版本号，由服务器判断是否有最新版本。如果有最新版本，返回版本的相关信息，由 Mobile 的逻辑判断是否升级；如果没有新版本返回 HTTP 的 404 状态码。
+客户端访问 /v1/updates ，发送当前运行的版本号，由服务器判断是否有最新版本。如果有最新版本，返回版本的相关信息，由 Mobile 的逻辑判断是否升级；如果没有新版本返回 HTTP 的 404 状态码。
 
 判断规则：
 
@@ -53,22 +55,22 @@ Content-Type: application/json
 * 判断当前版本是否在可升级版本中。
 * 判断当前时间是否在可升级时间内。
 
-##### Example Request:
+###### Example Request:
 
 ```
-GET /v1/update HTTP/1.1
+GET /v1/updates HTTP/1.1
 Host: update.arkors.com
 X-Arkors-Application-Id: demo
 X-Arkors-Application-Token: cb21df532c6647383af7efa0fd8405f2,1389085779854
 X-Arkors-Application-Log: 5024442115e7bd738354c1fac662aed5
-X-Arkors-Application-Client: ANDROID,3ad3ce877d6c42b131580748603f8d6a
+X-Arkors-Application-Client: 3ad3ce877d6c42b131580748603f8d6a,ANDROID
 Accept: application/json
 {
   "version": "0.3.2"  
 }
 ```
 
-##### Example Response
+###### Example Response
 
 ```
 HTTP/1.1 200 OK
@@ -85,25 +87,25 @@ Content-Type: application/json
 }
 ```
 
-##### Status Codes:
+###### Status Codes:
 
-* 200 – 返回 Update 登录信息。
-* 400 – Errors (invalid json, missing or invalid fields, etc)
+* 200 - 返回 Update 登录信息。
+* 400 - Errors (invalid json, missing or invalid fields, etc)
 * 401 - Unauthorized，把 Token 发送到 OAuth 模块认证返回失败信息。
 * 404 - 没有要升级的版本信息
 
-#### PUT /v1/update
+##### PUT /v1/updates
 
 更新一个 Application 的版本信息。由 [Board](https://github.com/arkors/board) 模块通过 UI 界面进行调用。
 
-##### Example Request:
+###### Example Request:
 
 ```
-PUT /v1/update HTTP/1.1
+PUT /v1/updates HTTP/1.1
 Host: update.arkors.com
 X-Arkors-Application-Id: demo
 X-Arkors-Application-Log: 5024442115e7bd738354c1fac662aed5
-X-Arkors-Application-Client: Board,xxx.xx.xx.xxx
+X-Arkors-Application-Client: xxx.xx.xx.xxx,BOARD
 Accept: application/json
 {
   "id": "3",
@@ -116,7 +118,7 @@ Accept: application/json
 }
 ```
 
-##### Example Response
+###### Example Response
 
 ```
 HTTP/1.1 200 OK
@@ -127,8 +129,40 @@ Content-Type: application/json
 }
 ```
 
-##### Status Codes:
+###### Status Codes:
 
 * 200 – 更新 Update 记录成功
+* 400 – Errors (invalid json, missing or invalid fields, etc)
+* 404 - 没有找到版本的记录
+
+##### DELETE /v1/updates/:id
+
+删除一个 Application 的版本信息。由 [Board](https://github.com/arkors/board) 模块通过 UI 界面进行调用。
+
+###### Example Request:
+
+```
+DELETE /v1/updates/:id HTTP/1.1
+Host: update.arkors.com
+X-Arkors-Application-Id: demo
+X-Arkors-Application-Log: 5024442115e7bd738354c1fac662aed5
+X-Arkors-Application-Client: xxx.xx.xx.xxx,BOARD
+Accept: application/json
+```
+
+###### Example Response
+
+```
+HTTP/1.1 200 OK
+X-Arkors-Application-Log: cb21df532c6647383af7efa0fd8405f2
+Content-Type: application/json
+{
+  "result" : "OK"
+}
+```
+
+###### Status Codes:
+
+* 200 – 删除 Update 记录成功
 * 400 – Errors (invalid json, missing or invalid fields, etc)
 * 404 - 没有找到版本的记录
