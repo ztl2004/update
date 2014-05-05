@@ -2,6 +2,8 @@ package main
 
 import (
   "github.com/codegangsta/martini"
+  "github.com/codegangsta/martini-contrib/render"
+  "log"
 )
 
 const url = "/v1/updates"
@@ -16,7 +18,7 @@ func main() {
 }
 
 func HandleNewVersion(version Version, r render.Render) {
-  _, err := newVersion(version.Name)
+  err := newVersion(version.Name)
   if err != nil {
     log.Println(err)
     return

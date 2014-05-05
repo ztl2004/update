@@ -16,10 +16,9 @@ package main
 
 import (
   "errors"
-  "log"
-
   _ "github.com/go-sql-driver/mysql"
   "github.com/go-xorm/xorm"
+  "log"
 )
 
 type Version struct {
@@ -51,9 +50,9 @@ func newVersion(name string) error {
   return err
 }
 
-func getVersion(id Id) (*Version, error) {
+func getVersion() (*Version, error) {
   a := &Version{}
-  has, err := x.Id(id).Get(a)
+  has, err := x.Id("").Get(a)
   if err != nil {
     return nil, err
   } else if !has {
