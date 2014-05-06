@@ -1,4 +1,4 @@
-##Update API Specification
+## Update API Specification
 
 ### API Specification
 
@@ -9,7 +9,6 @@
 创建一个 Application 的版本信息。由 [Board](https://github.com/arkors/board) 模块通过 UI 界面进行调用。
 
 ###### Example Request:
-
 ```
 POST /v1/updates/232 HTTP/1.1
 Host: update.arkors.com
@@ -28,7 +27,6 @@ Accept: application/json
 ```
 
 ###### Example Response
-
 ```
 HTTP/1.1 201 OK
 X-Arkors-Application-Log: cb21df532c6647383af7efa0fd8405f2
@@ -46,9 +44,8 @@ Content-Type: application/json
 ```
 
 ###### Status Codes:
-
 * 201 – 创建 Update 记录成功
-* 400 – Errors (invalid json, missing or invalid fields, etc)
+* 400 – Errors (invalid json, missing, duplication or invalid fields, etc)
 
 ##### GET /v1/updates/:app/:version
 
@@ -62,7 +59,6 @@ Content-Type: application/json
 * 判断当前时间是否在可升级时间内。
 
 ###### Example Request:
-
 ```
 GET /v1/updates/232/3 HTTP/1.1
 Host: update.arkors.com
@@ -74,7 +70,6 @@ Accept: application/json
 ```
 
 ###### Example Response
-
 ```
 HTTP/1.1 200 OK
 X-Arkors-Application-Log: cb21df532c6647383af7efa0fd8405f2
@@ -92,7 +87,6 @@ Content-Type: application/json
 ```
 
 ###### Status Codes:
-
 * 200 - 返回 Update 登录信息。
 * 400 - Errors (invalid json, missing or invalid fields, etc)
 * 401 - Unauthorized，把 Token 发送到 OAuth 模块认证返回失败信息。
@@ -103,7 +97,6 @@ Content-Type: application/json
 更新一个 Application 的版本信息。由 [Board](https://github.com/arkors/board) 模块通过 UI 界面进行调用。
 
 ###### Example Request:
-
 ```
 PUT /v1/updates/232/3 HTTP/1.1
 Host: update.arkors.com
@@ -122,7 +115,6 @@ Accept: application/json
 ```
 
 ###### Example Response
-
 ```
 HTTP/1.1 200 OK
 X-Arkors-Application-Log: cb21df532c6647383af7efa0fd8405f2
@@ -140,7 +132,6 @@ Content-Type: application/json
 ```
 
 ###### Status Codes:
-
 * 200 – 更新 Update 记录成功
 * 400 – Errors (invalid json, missing or invalid fields, etc)
 * 404 - 没有找到版本的记录
@@ -150,7 +141,6 @@ Content-Type: application/json
 删除一个 Application 的版本信息。由 [Board](https://github.com/arkors/board) 模块通过 UI 界面进行调用。
 
 ###### Example Request:
-
 ```
 DELETE /v1/updates/:id HTTP/1.1
 Host: update.arkors.com
@@ -160,7 +150,6 @@ Accept: application/json
 ```
 
 ###### Example Response
-
 ```
 HTTP/1.1 200 OK
 X-Arkors-Application-Log: cb21df532c6647383af7efa0fd8405f2
@@ -178,7 +167,6 @@ Content-Type: application/json
 ```
 
 ###### Status Codes:
-
 * 200 – 删除 Update 记录成功
 * 400 – Errors (invalid json, missing or invalid fields, etc)
 * 404 - 没有找到版本的记录
