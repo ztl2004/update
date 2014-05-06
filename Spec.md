@@ -62,7 +62,7 @@ Content-Type: application/json
 ```
 GET /v1/updates/232/3 HTTP/1.1
 Host: update.arkors.com
-X-Arkors-Application-Id: demo
+X-Arkors-Application-Id: 232
 X-Arkors-Application-Token: cb21df532c6647383af7efa0fd8405f2,1389085779854
 X-Arkors-Application-Log: 5024442115e7bd738354c1fac662aed5
 X-Arkors-Application-Client: 3ad3ce877d6c42b131580748603f8d6a,ANDROID
