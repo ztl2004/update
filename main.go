@@ -1,4 +1,4 @@
-package main
+package update
 
 import (
   "github.com/codegangsta/martini"
@@ -6,12 +6,12 @@ import (
   "log"
 )
 
-const url = "/v1/updates"
+const url = "/v1/updates/"
 
 func main() {
   m := martini.Classic()
-  m.Get(url, func() string {
-    return "Martini, shaken not stirred!"
+  m.Get(url+":app/:version", func(params martini.Params) string {
+    return params["app"] + " and " + params["version"]
   })
   //m.Post(url, binding.Json(Version), HandleNewVersion)
   m.Run()
