@@ -16,7 +16,7 @@ var _ = Describe("Test", func() {
     err  error
   )
 
-  Context("Just a Test", func() {
+  Context("Post", func() {
 
     BeforeEach(func() {
       test := Version{}
@@ -27,8 +27,16 @@ var _ = Describe("Test", func() {
     })
 
     It("returns a 200 Status Code", func() {
-      PostRequest("POST", "/test", HandleNewVersion, bytes.NewReader(body))
+      PostRequest("POST", "/v1/updates/1", HandleNewVersion, bytes.NewReader(body))
       Expect(response.Code).To(Equal(200))
+    })
+  })
+
+  Context("Get", func() {
+    It("returns a 200 Status Code", func() {
+      Request("GET", "/v1/updates/1/100", GetVersion)
+      Expect(response.Code).To(Equal(200))
+      //Expect(response.Body).To(MatchJSON(`[{"Name":"keep things green"}]`))
     })
   })
 })

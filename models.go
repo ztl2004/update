@@ -1,7 +1,6 @@
 package update
 
 import (
-  "errors"
   _ "github.com/go-sql-driver/mysql"
   "github.com/go-xorm/xorm"
   "log"
@@ -31,20 +30,4 @@ func init() {
   if err = x.Sync(new(Version)); err != nil {
     log.Fatalf("Fail to sync database: %v\n", err)
   }
-}
-
-func newVersion(name string) error {
-  _, err := x.Insert(&Version{Name: name})
-  return err
-}
-
-func getVersion() (*Version, error) {
-  a := &Version{}
-  has, err := x.Id("").Get(a)
-  if err != nil {
-    return nil, err
-  } else if !has {
-    return nil, errors.New("Account does not exist")
-  }
-  return a, nil
 }
