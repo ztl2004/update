@@ -46,7 +46,7 @@ func GetVersion(db *xorm.Engine, params martini.Params, r render.Render) {
   version.App = appId
   version.Version = params["version"]
   has, err := db.Get(version)
-  log.Println(version, has, params["version"])
+  //log.Println(version, has, params["version"])
   if err != nil {
     r.JSON(400, map[string]interface{}{"Errors": "invalid json"})
   }
@@ -57,11 +57,14 @@ func GetVersion(db *xorm.Engine, params martini.Params, r render.Render) {
   r.JSON(200, version)
 }
 
-func PostVersion(db *xorm.Engine, version model.Version, r render.Render) {
-  log.Println("in post")
+func PostVersion(db *xorm.Engine, params martini.Params, version model.Version, r render.Render) {
+  if version.App == 0 && version.Version == "" {
+
+    r.JSON(400, map[string]interface{}{"Errors": "invalid json"})
+  }
   _, err := db.Insert(version)
   if err != nil {
-    r.JSON(400, map[string]interface{}{"Errors": "invalid json"})
+    r.JSON(400, map[string]interface{}{"Errors": "db error"})
     return
   }
   //r.JSON(200, map[string]interface{}{"version added": "ok"})
