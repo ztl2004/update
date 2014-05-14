@@ -1,80 +1,45 @@
 package main
 
 import (
+  "github.com/arkors/update/handler"
+  "github.com/arkors/update/model"
   "github.com/codegangsta/martini"
   "github.com/codegangsta/martini-contrib/binding"
-  "github.com/codegangsta/martini-contrib/render"
+  "github.com/go-xorm/xorm"
   "log"
   "net/http"
-  "strconv"
 )
 
 const url = "/v1/updates/"
 
+var db *xorm.Engine
+
+func init() {
+  var err error
+  db, err = xorm.NewEngine("mysql", "root:root@/update?charset=utf8")
+  if err != nil {
+    log.Fatalf("Fail to create engine: %v\n", err)
+  }
+
+  if err = db.Sync(new(model.Version)); err != nil {
+    log.Fatalf("Fail to sync database: %v\n", err)
+  }
+}
+
+func Db() martini.Handler {
+  return func(c martini.Context) {
+    c.Map(db)
+  }
+}
+
 func main() {
   m := martini.Classic()
+  m.Use(Db())
   m.Group("/v1/updates", func(r martini.Router) {
-    m.Get(url+":app/:version", GetVersion)
-    m.Post(url, binding.Json(Version{}), PostVersion)
-    m.Put(url+":app/:version", PutVersion)
-    m.Delete(url+":app/:version", DelVersion)
+    m.Get(url+":app/:version", handler.GetVersion)
+    m.Post(url+":app/", binding.Json(model.Version{}), handler.PostVersion)
+    m.Put(url+":app/:version", handler.PutVersion)
+    m.Delete(url+":app/:version", handler.DelVersion)
   })
   http.ListenAndServe(":3000", m)
-}
-
-func DelVersion(params martini.Params, r render.Render) {
-  version := new(Version)
-  appId, err := strconv.ParseInt(params["app"], 0, 64)
-  version.App = appId
-  version.Version = params["versioin"]
-  affected, err := x.Cols("App", "Version").Delete(version)
-  if err != nil {
-    r.JSON(400, map[string]interface{}{"Errors": "invalid json"})
-  }
-  if affected == 0 {
-    r.JSON(400, version)
-  }
-  r.JSON(200, version)
-}
-
-func PutVersion(params martini.Params, r render.Render) {
-  version := new(Version)
-  appId, err := strconv.ParseInt(params["app"], 0, 64)
-  version.App = appId
-  version.Version = params["versioin"]
-  affected, err := x.Cols("App", "Version").Update(version)
-  if err != nil {
-    r.JSON(400, map[string]interface{}{"Errors": "invalid json"})
-  }
-  if affected == 0 {
-    r.JSON(400, version)
-  }
-  r.JSON(200, version)
-}
-
-func GetVersion(params martini.Params, r render.Render) {
-  version := new(Version)
-  appId, err := strconv.ParseInt(params["app"], 0, 64)
-  version.App = appId
-  version.Version = params["version"]
-  has, err := x.Get(version)
-  log.Println(version, has, params["version"])
-  if err != nil {
-    r.JSON(400, map[string]interface{}{"Errors": "invalid json"})
-  }
-  if !has {
-    r.JSON(400, version)
-    return
-  }
-  r.JSON(200, version)
-}
-
-func PostVersion(version Version, r render.Render) {
-  _, err := x.Insert(version)
-  if err != nil {
-    r.JSON(400, map[string]interface{}{"Errors": "invalid json"})
-    return
-  }
-  //r.JSON(200, map[string]interface{}{"version added": "ok"})
-  r.JSON(200, version)
 }
