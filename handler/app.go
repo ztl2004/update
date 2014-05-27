@@ -6,7 +6,7 @@ import (
   "github.com/go-xorm/xorm"
   //"github.com/codegangsta/martini-contrib/binding"
   "github.com/codegangsta/martini-contrib/render"
-  "log"
+  //"log"
   "strconv"
 )
 
@@ -14,7 +14,7 @@ func DelVersion(db *xorm.Engine, params martini.Params, r render.Render) {
   version := new(model.Version)
   appId, err := strconv.ParseInt(params["app"], 0, 64)
   version.App = appId
-  version.Version = params["versioin"]
+  version.Version = params["version"]
   affected, err := db.Cols("App", "Version").Delete(version)
   if err != nil {
     r.JSON(400, map[string]interface{}{"Errors": "invalid json"})
@@ -29,7 +29,7 @@ func PutVersion(db *xorm.Engine, params martini.Params, r render.Render) {
   version := new(model.Version)
   appId, err := strconv.ParseInt(params["app"], 0, 64)
   version.App = appId
-  version.Version = params["versioin"]
+  version.Version = params["version"]
   affected, err := db.Cols("App", "Version").Update(version)
   if err != nil {
     r.JSON(400, map[string]interface{}{"Errors": "invalid json"})

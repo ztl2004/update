@@ -59,6 +59,31 @@ var _ = Describe("Test", func() {
       Expect(response.Code).To(Equal(200))
     })
   })
+
+  Context("Put", func() {
+    It("returns a 200 Status Code", func() {
+      request := NewRequest("PUT", "/v1/updates/2/321", nil)
+      response = httptest.NewRecorder()
+      m.ServeHTTP(response, request)
+      Expect(response.Code).To(Equal(200))
+    })
+  })
+
+  Context("Del", func() {
+    It("returns a 400 Status Code", func() {
+      request := NewRequest("DELETE", "/v1/updates/2/123", nil)
+      response = httptest.NewRecorder()
+      m.ServeHTTP(response, request)
+      Expect(response.Code).To(Equal(400))
+    })
+    It("returns a 200 Status Code", func() {
+      request := NewRequest("DELETE", "/v1/updates/2/321", nil)
+      response = httptest.NewRecorder()
+      m.ServeHTTP(response, request)
+      Expect(response.Code).To(Equal(200))
+    })
+  })
+
 })
 
 func NewRequest(method string, url string, body []byte) *http.Request {
