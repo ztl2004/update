@@ -16,7 +16,7 @@ var db *xorm.Engine
 
 func init() {
   var err error
-  db, err = xorm.NewEngine("mysql", "root:root@/update?charset=utf8")
+  db, err = xorm.NewEngine("mysql", "arkors:arkors@/arkors_update?charset=utf8")
   if err != nil {
     log.Fatalf("Fail to create engine: %v\n", err)
   }
