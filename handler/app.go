@@ -50,7 +50,6 @@ func GetVersion(db *xorm.Engine, params martini.Params,versionModel model.Versio
   if log != true || client != true||token !=true {
     r.JSON(400,map[string]interface{"error":"Invalid request header,it should be include 'X-Arkors-Application-log','X-Arkors-Application-Client' and 'X-Arkors-Application-Token'."})
   }
-  test
 }
 
 func UpdateApp(db *xorm.Engine, params martini.Params, r render.Render){
