@@ -11,7 +11,7 @@ type Version struct {
   Version    string    `xorm:"text"`
   Name       string    `xorm:"text"`
   Updated    time.Time `xorm:"updated"`
-  Changed    time.Time `xorm:"changed"`
+  Changed    string    `xorm:"text"`
   Url        string    `xorm:"text"`
   Client     string    `xorm:"text"`
   Compatible string    `xorm:"text"`

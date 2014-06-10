@@ -6,8 +6,8 @@ import (
   "net/http"
   "net/http/httptest"
 
-  "github.com/arkors/oauth/handler"
-  "github.com/arkors/oauth/model"
+  "github.com/arkors/update/handler"
+  "github.com/arkors/update/model"
   "github.com/go-martini/martini"
   "github.com/martini-contrib/binding"
   "github.com/martini-contrib/render"
@@ -15,31 +15,29 @@ import (
   . "github.com/onsi/gomega"
 )
 
-var response *httptest.ResponseRecorder
-
 var _ = Describe("Testing Update App Create", func() {
   It("POST '/v1/updates/:app' will returns a 201 status code", func() {
 
     m := martini.Classic()
-    m.Use(render.Renderer())
     m.Use(Db())
-    m.Use(Pool())
+    m.Use(render.Renderer())
+    // m.Use(Pool())
     m.Group("/v1/updates", func(r martini.Router) {
       r.Post("/:app", binding.Json(model.Version{}), handler.CreateVersion)
     })
 
     response = httptest.NewRecorder()
-    test := model.Version{Version: "3", Name: "0.3.3",update:"2014-11-10T00:00:00.000Z",Changed: "1. New design application icon. \n 2. Fix some bugs.", Url: "http//file.arkors.com/releases/demo-lasttest.apk", Client: "Android", Compatible: "0.3.2 0.3.1 0.2.x 0.2.x"}
-    body, err = json.Marshal(test)
-    request, _ := http.NewRequest("POST", "/v1/updates/232", body)
+    test := model.Version{Version: "3", Name: "0.3.3", Changed: "1. New design application icon. \n 2. Fix some bugs.", Url: "http//file.arkors.com/releases/demo-lasttest.apk", Client: "Android", Compatible: "0.3.2 0.3.1 0.2.x 0.2.x"}
+    body, _ := json.Marshal(test)
+    request, _ := http.NewRequest("POST", "/v1/updates/232", bytes.NewReader(body))
     request.Header.Set("X-Arkors-Application-Log", "5024442115e7bd738354c1fac662aed5")
     request.Header.Set("X-Arkors-Application-Client", "127.0.0.1,BOARD")
     request.Header.Set("Accept", "application/json")
     m.ServeHTTP(response, request)
 
-    var versionModel Version
+    var result model.Version
 
-    err := json.Unmarshal(response.Body.Bytes(), &versionModel)
+    err := json.Unmarshal(response.Body.Bytes(), &result)
 
     Ω(err).Should(BeNil())
     Ω(result.App).Should(BeEquivalentTo(232))
@@ -52,15 +50,15 @@ var _ = Describe("Testing Update App Create", func() {
     m := martini.Classic()
     m.Use(render.Renderer())
     m.Use(Db())
-    m.Use(Pool())
+    // m.Use(Pool())
     m.Group("/v1/updates", func(r martini.Router) {
       r.Post("/:app", binding.Json(model.Version{}), handler.CreateVersion)
     })
 
     response = httptest.NewRecorder()
     test := model.Version{Version: "3", Name: "0.3.3", Changed: "1. New design application icon. \n 2. Fix some bugs.", Url: "http//file.arkors.com/releases/demo-lasttest.apk", Client: "Android", Compatible: "0.3.2 0.3.1 0.2.x 0.2.x"}
-    body, err = json.Marshal(test)
-    request, _ := http.NewRequest("POST", "/v1/updates/232", body)
+    body, _ := json.Marshal(test)
+    request, _ := http.NewRequest("POST", "/v1/updates/232", bytes.NewReader(body))
     request.Header.Set("X-Arkors-Application-Log", "5024442115e7bd738354c1fac662aed5")
     request.Header.Set("X-Arkors-Application-Client", "127.0.0.1,BOARD")
     request.Header.Set("Accept", "application/json")
@@ -70,9 +68,9 @@ var _ = Describe("Testing Update App Create", func() {
       Error string
     }
     var result Result
-    err := json.Unmarshal(response.Body.Bytes(), &result)
+    err5 := json.Unmarshal(response.Body.Bytes(), &result)
 
-    Ω(err).Should(BeNil())
+    Ω(err5).Should(BeNil())
     Ω(result.Error).Should(BeNumerically(">"), 0)
 
     Expect(response.Code).To(Equal(http.StatusBadRequest))
@@ -84,15 +82,15 @@ var _ = Describe("Testing Update App Create", func() {
     m := martini.Classic()
     m.Use(render.Renderer())
     m.Use(Db())
-    m.Use(Pool())
+    // m.Use(Pool())
     m.Group("/v1/updates", func(r martini.Router) {
       r.Post("/:app", binding.Json(model.Version{}), handler.CreateVersion)
     })
 
     response = httptest.NewRecorder()
     test := model.Version{Version: "3", Name: "0.3.3", Changed: "1. New design application icon. \n 2. Fix some bugs.", Url: "http//file.arkors.com/releases/demo-lasttest.apk", Client: "Android", Compatible: "0.3.2 0.3.1 0.2.x 0.2.x"}
-    body, err = json.Marshal(test)
-    request, _ := http.NewRequest("POST", "/v1/updates/232updates", body)
+    body, _ := json.Marshal(test)
+    request, _ := http.NewRequest("POST", "/v1/updates/232updates", bytes.NewReader(body))
     request.Header.Set("X-Arkors-Application-Log", "5024442115e7bd738354c1fac662aed5")
     request.Header.Set("X-Arkors-Application-Client", "127.0.0.1,BOARD")
     request.Header.Set("Accept", "application/json")
@@ -102,9 +100,9 @@ var _ = Describe("Testing Update App Create", func() {
       Error string
     }
     var result Result
-    err := json.Unmarshal(response.Body.Bytes(), &result)
+    err2 := json.Unmarshal(response.Body.Bytes(), &result)
 
-    Ω(err).Should(BeNil())
+    Ω(err2).Should(BeNil())
     Ω(result.Error).Should(BeNumerically(">"), 0)
 
     Expect(response.Code).To(Equal(http.StatusBadRequest))
@@ -114,7 +112,7 @@ var _ = Describe("Testing Update App Create", func() {
     m := martini.Classic()
     m.Use(render.Renderer())
     m.Use(Db())
-    m.Use(Pool())
+    // m.Use(Pool())
     m.Group("/v1/updates", func(r martini.Router) {
       r.Post("/:app", binding.Json(model.Version{}), handler.CreateVersion)
     })
@@ -143,14 +141,13 @@ var _ = Describe("Testing Update App Create", func() {
     m := martini.Classic()
     m.Use(render.Renderer())
     m.Use(Db())
-    m.Use(Pool())
+    // m.Use(Pool())
     m.Group("/v1/updates", func(r martini.Router) {
       r.Post("/:app", binding.Json(model.Version{}), handler.CreateVersion)
     })
 
     response = httptest.NewRecorder()
-    body, err = json.Marshal(test)
-    request, _ := http.NewRequest("POST", "/v1/updates/232updates", bytes.NewReader([]byte("{\"testVersion:\"\"3\"}")))
+    request, _ := http.NewRequest("POST", "/v1/updates/232", bytes.NewReader([]byte("{\"testVersion:\"\"3\"}")))
     request.Header.Set("X-Arkors-Application-Log", "5024442115e7bd738354c1fac662aed5")
     request.Header.Set("X-Arkors-Application-Client", "127.0.0.1,BOARD")
     request.Header.Set("Accept", "application/json")
@@ -160,9 +157,9 @@ var _ = Describe("Testing Update App Create", func() {
       Error string
     }
     var result Result
-    err := json.Unmarshal(response.Body.Bytes(), &result)
+    err3 := json.Unmarshal(response.Body.Bytes(), &result)
 
-    Ω(err).Should(BeNil())
+    Ω(err3).Should(BeNil())
     Ω(result.Error).Should(BeNumerically(">"), 0)
 
     Expect(response.Code).To(Equal(http.StatusBadRequest))
@@ -171,6 +168,7 @@ var _ = Describe("Testing Update App Create", func() {
 
 })
 
+/*
 var _ = Describe("Testing Update App Get Version Information", func() {
   It("Get '/v1/updates/:app/:version' will returns a 200 status code", func() {
 
@@ -686,4 +684,4 @@ var _ = Describe("Testing Update App Delete Version", func() {
     Expect(response.Code).To(Equal(http.StatusNotFound))
 
     })
-})
+})*/
