@@ -47,25 +47,75 @@ func CreateVersion(db *xorm.Engine, params martini.Params, version model.Version
     }
   }
 }
-func GetVersion(db *xorm.Engine, params martini.Params, versionModel model.Version, r render.Render, res *http.Request) {
-  /* appId,err := strconv.ParseInt(params["app"],0,64)
-  versionId,err2 := strconv.ParseInt(params["verion"],0,64)
-
-  if err !=nil||err2 != nil {
-    r.JSON(400,map[string]interface{"error":"The application's id or version's must be numrical"})
+func GetVersion(db *xorm.Engine, params martini.Params, r render.Render, res *http.Request) {
+  fmt.Println("aaaaaaaaaaaaaaa")
+  _, errAppId := strconv.ParseInt(params["app"], 0, 64)
+  if errAppId != nil {
+    fmt.Println("enter The application's id must be numrical")
+    r.JSON(400, map[string]interface{}{"error": "The application's id must be numrical"})
+    return
   }
-
-  _,log:=res.Header["X-Arkors-Application-Log"]
-  _,client=res.Header["X-Arkors-Application-Client"]
-  _,token=res.Header["X-Arkors-Application-Token"]
-
-  if log != true || client != true||token !=true {
-    r.JSON(400,map[string]interface{"error":"Invalid request header,it should be include 'X-Arkors-Application-log','X-Arkors-Application-Client' and 'X-Arkors-Application-Token'."})
-  }*/
+  _, log := res.Header["X-Arkors-Application-Log"]
+  _, id := res.Header["X-Arkors-Application-Id"]
+  _, Token := res.Header["X-Arkors-Application-Token"]
+  _, client := res.Header["X-Arkors-Application-Client"]
+  if log != true || client != true || id != true || Token != true {
+    fmt.Println("Invalid request header,it should be include 'X-Arkors-Application-log' and 'X-Arkors-Application-Client'.")
+    r.JSON(400, map[string]interface{}{"error": "Invalid request header,it should be include 'X-Arkors-Application-log' and 'X-Arkors-Application-Client'."})
+    return
+  }
+  sql := "select * from version where app=" + params["app"] + " and version='" + params["version"] + "'"
+  fmt.Println(sql)
+  result := new(model.Version)
+  has, err := db.Sql(sql).Get(result)
+  if err != nil {
+    r.JSON(400, map[string]interface{}{"error": "Database Error"})
+    return
+  }
+  if has {
+    r.JSON(200, result)
+    return
+  } else {
+    r.JSON(404, map[string]interface{}{"error": "No version found"})
+    return
+  }
 }
 
-func UpdateApp(db *xorm.Engine, params martini.Params, r render.Render) {
-
+func UpdateApp(db *xorm.Engine, params martini.Params, version model.Version, r render.Render, res *http.Request) {
+  appId, errAppId := strconv.ParseInt(params["app"], 0, 64)
+  if errAppId != nil {
+    fmt.Println("enter The application's id must be numrical")
+    r.JSON(400, map[string]interface{}{"error": "The application's id must be numrical"})
+    return
+  }
+  _, log := res.Header["X-Arkors-Application-Log"]
+  _, client := res.Header["X-Arkors-Application-Client"]
+  if log != true || client != true {
+    fmt.Println("Invalid request header,it should be include 'X-Arkors-Application-log' and 'X-Arkors-Application-Client'.")
+    r.JSON(400, map[string]interface{}{"error": "Invalid request header,it should be include 'X-Arkors-Application-log' and 'X-Arkors-Application-Client'."})
+    return
+  }
+  if version.Version == "" || version.Name == "" || version.Changed == "" || version.Url == "" || version.Client == "" || version.Compatible == "" {
+    fmt.Println("Invalid json body")
+    r.JSON(400, map[string]interface{}{"error": "Invalid json body "})
+    return
+  }
+  version.App = appId
+  version.Version = params["version"]
+  fmt.Println("changed=======" + version.Changed)
+  has, err := db.Update(version)
+  if err != nil {
+    r.JSON(400, map[string]interface{}{"error": "Database Error"})
+    return
+  }
+  if has == 0 {
+    fmt.Println("not found")
+    r.JSON(404, map[string]interface{}{"error": "Not found any version records"})
+    return
+  } else {
+    r.JSON(200, version)
+    return
+  }
 }
 
 func DelVersion(db *xorm.Engine, params martini.Params, version model.Version, r render.Render, res *http.Request) {
@@ -80,17 +130,19 @@ func DelVersion(db *xorm.Engine, params martini.Params, version model.Version, r
     r.JSON(400, map[string]interface{}{"error": "Invalid request header,it should be include 'X-Arkors-Application-log' and 'X-Arkors-Application-Client'."})
     return
   }
-  sql := "select * from version where app=" + params["id"]
-  fmt.Println(sql)
-  results, err := db.Query(sql)
-  //fmt.Println(results)
-  if results == nil {
-    //fmt.Println("testRepeatid")
-    r.JSON(400, map[string]interface{}{"error": "Application's id is not exist"})
+  sql := "select * from version where id=" + params["id"]
+  result := new(model.Version)
+  has, err := db.Sql(sql).Get(result)
+  if err != nil {
+    r.JSON(400, map[string]interface{}{"error": "Datebase Error"})
+    return
+  }
+  if has {
+    db.Delete(result)
+    r.JSON(200, result)
     return
   } else {
-    var result model.Version
-    db.Sql(sql).Get(&result)
-    r.JSON(201, result)
+    r.JSON(404, map[string]interface{}{"error": "Application's ID is not exist!"})
+    return
   }
 }
