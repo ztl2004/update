@@ -48,10 +48,8 @@ func CreateVersion(db *xorm.Engine, params martini.Params, version model.Version
   }
 }
 func GetVersion(db *xorm.Engine, params martini.Params, r render.Render, res *http.Request) {
-  fmt.Println("aaaaaaaaaaaaaaa")
   _, errAppId := strconv.ParseInt(params["app"], 0, 64)
   if errAppId != nil {
-    fmt.Println("enter The application's id must be numrical")
     r.JSON(400, map[string]interface{}{"error": "The application's id must be numrical"})
     return
   }
@@ -60,12 +58,10 @@ func GetVersion(db *xorm.Engine, params martini.Params, r render.Render, res *ht
   _, Token := res.Header["X-Arkors-Application-Token"]
   _, client := res.Header["X-Arkors-Application-Client"]
   if log != true || client != true || id != true || Token != true {
-    fmt.Println("Invalid request header,it should be include 'X-Arkors-Application-log' and 'X-Arkors-Application-Client'.")
     r.JSON(400, map[string]interface{}{"error": "Invalid request header,it should be include 'X-Arkors-Application-log' and 'X-Arkors-Application-Client'."})
     return
   }
   sql := "select * from version where app=" + params["app"] + " and version='" + params["version"] + "'"
-  fmt.Println(sql)
   result := new(model.Version)
   has, err := db.Sql(sql).Get(result)
   if err != nil {
@@ -84,7 +80,6 @@ func GetVersion(db *xorm.Engine, params martini.Params, r render.Render, res *ht
 func UpdateApp(db *xorm.Engine, params martini.Params, version model.Version, r render.Render, res *http.Request) {
   appId, errAppId := strconv.ParseInt(params["app"], 0, 64)
   if errAppId != nil {
-    fmt.Println("enter The application's id must be numrical")
     r.JSON(400, map[string]interface{}{"error": "The application's id must be numrical"})
     return
   }
@@ -96,20 +91,18 @@ func UpdateApp(db *xorm.Engine, params martini.Params, version model.Version, r 
     return
   }
   if version.Version == "" || version.Name == "" || version.Changed == "" || version.Url == "" || version.Client == "" || version.Compatible == "" {
-    fmt.Println("Invalid json body")
     r.JSON(400, map[string]interface{}{"error": "Invalid json body "})
     return
   }
   version.App = appId
   version.Version = params["version"]
   fmt.Println("changed=======" + version.Changed)
-  has, err := db.Update(version)
+  has, err := db.In("App", appId).Update(version)
   if err != nil {
     r.JSON(400, map[string]interface{}{"error": "Database Error"})
     return
   }
   if has == 0 {
-    fmt.Println("not found")
     r.JSON(404, map[string]interface{}{"error": "Not found any version records"})
     return
   } else {
@@ -119,7 +112,7 @@ func UpdateApp(db *xorm.Engine, params martini.Params, version model.Version, r 
 }
 
 func DelVersion(db *xorm.Engine, params martini.Params, version model.Version, r render.Render, res *http.Request) {
-  _, err := strconv.ParseInt(params["id"], 0, 64)
+  id, err := strconv.ParseInt(params["id"], 0, 64)
   if err != nil {
     r.JSON(400, map[string]interface{}{"error": "The application's id must be numrical"})
     return
@@ -138,7 +131,7 @@ func DelVersion(db *xorm.Engine, params martini.Params, version model.Version, r
     return
   }
   if has {
-    db.Delete(result)
+    db.In("Id", id).Delete(result)
     r.JSON(200, result)
     return
   } else {
